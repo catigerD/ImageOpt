@@ -7,6 +7,10 @@ from PIL import Image
 # 配置你的 TinyPNG API 密钥
 TINYPNG_API_KEY = "DFY2dxk82bXZPj07cNtT1R21vrXc0fZN"
 
+webp_block_regex_list = [
+    r'.*app/src/main/assets/.*'
+]
+
 
 class FileProcessor:
     def __init__(self):
@@ -30,6 +34,11 @@ class FileProcessor:
     def convert_to_webp(self, input_path, output_path, quality=80):
         """将图片转换为 WebP 格式"""
         try:
+            for regex in webp_block_regex_list:
+                if re.search(regex, input_path):
+                    print(f"WebP 转换失败: 命中黑名单")
+                    return float('inf')
+
             with Image.open(input_path) as img:
                 img.save(output_path, 'webp', quality=quality)
             return os.path.getsize(output_path)
