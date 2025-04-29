@@ -11,6 +11,10 @@ webp_block_regex_list = [
     r'.*app/src/main/assets/.*'
 ]
 
+block_regex_list = [
+    r'\.9\.png$'
+]
+
 
 class FileProcessor:
     def __init__(self):
@@ -51,6 +55,11 @@ class FileProcessor:
         if not os.path.isfile(image_path):
             print(f"文件不存在: {image_path}")
             return -1
+
+        for regex in block_regex_list:
+            if re.search(regex, image_path):
+                print(f"命中黑名单: {image_path}")
+                return -1
 
         # 只处理支持的图片格式
         if not image_path.lower().endswith(self.supported_formats):
@@ -124,6 +133,7 @@ def get_tinypng_key():
     match = re.search(r'TinyPNG\.API\.Key\s*=\s*(.+)', content)
     return match.group(1).strip() if match else None
 
+
 def main():
     if len(sys.argv) < 2:
         print("请提供图片路径作为参数")
@@ -133,6 +143,8 @@ def main():
     for image_path in sys.argv[1:]:
         processor.optimize_image(image_path)
 
+
 if __name__ == "__main__":
     import sys
+
     main()
